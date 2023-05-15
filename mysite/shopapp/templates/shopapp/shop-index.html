@@ -1,0 +1,30 @@
+{% extends 'shopapp/base.html' %}
+
+{% block title %}
+    Shop Index
+{% endblock %}
+
+{% block body %}
+ <h1>Hello Shop Index!</h1>
+
+<div>
+    <ul>
+        {% for name, price in products %}
+        <li>{{ name|addslashes }} for ${{ price }}</li>
+        {% empty %}
+            No products here
+        {% endfor %}
+    </ul>
+</div>
+
+ <div>
+     {% comment "Optional note" %}
+        <p>Commented out text with {{ Time running: {{ time_running|center:"15" }} }}</p>
+     {% endcomment %}
+ </div>
+
+ <div>
+     {% lorem %}
+ </div>
+
+{% endblock %}
