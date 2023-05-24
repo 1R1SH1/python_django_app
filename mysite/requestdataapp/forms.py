@@ -20,4 +20,4 @@ def validate_file_size(file: InMemoryUploadedFile) -> None:
 
 
 class UploadFileForm(forms.Form):
-    file = forms.FileField(validators=[validate_file_size])
+    file = forms.FileField(validators=[validate_file_name, validate_file_size])
