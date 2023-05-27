@@ -26,11 +26,11 @@ class CountRequestsMiddleware:
         self.exeptions_count = 0
 
     def __call__(self, request: HttpRequest):
-        time_delay = 10
-        if self.requests_time:
-            if round(time.time() * 1) - self.requests_time['time'] < time_delay and self.requests_time['ip_address'] == request.META.get('REMOTE_ADDR'):
-                print('Passed less than 10 seconds for make new request from your ip address!')
-                return render(request, 'requestdataapp/error-request.html')
+        # time_delay = 10
+        # if self.requests_time:
+        #     if round(time.time() * 1) - self.requests_time['time'] < time_delay and self.requests_time['ip_address'] == request.META.get('REMOTE_ADDR'):
+        #         print('Passed less than 10 seconds for make new request from your ip address!')
+        #         return render(request, 'requestdataapp/error-request.html')
 
         self.requests_time = {'time': round(time.time()) * 1, 'ip_address': request.META.get('REMOTE_ADDR')}
         self.requests_count += 1
