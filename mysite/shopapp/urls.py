@@ -16,6 +16,7 @@ from .views import (
 )
 
 app_name = 'shopapp'
+
 urlpatterns = [
     path('', ShopIndexView.as_view(), name='index'),
     path('groups/', GroupsListView.as_view(), name='groups_list'),

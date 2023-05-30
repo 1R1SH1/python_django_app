@@ -1,8 +1,8 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from timeit import default_timer
-
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
@@ -46,6 +46,9 @@ class ProductDetailsView(DetailView):
     template_name = 'shopapp/products-details.html'
     model = Product
     context_object_name = 'product'
+    queryset = (
+        Order.objects.select_related('created_by').prefetch_related('products')
+    )
     # def get(self, request: HttpRequest, pk: int) -> HttpResponse:
     #     product = get_object_or_404(Product, pk=pk)
     #     context = {
@@ -58,7 +61,9 @@ class ProductsListView(ListView):
     template_name = 'shopapp/products-list.html'
     # model = Product
     context_object_name = 'products'
-    queryset = Product.objects.filter(archived=False)
+    queryset = (
+        Order.objects.select_related('created_by').prefetch_related('products').filter(archived=False)
+    )
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
@@ -66,15 +71,18 @@ class ProductsListView(ListView):
     #     return context
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(UserPassesTestMixin, CreateView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
     model = Product
-    fields = 'name', 'price', 'description', 'discount'
+    fields = 'name', 'price', 'created_by', 'description', 'discount'
     success_url = reverse_lazy('shopapp:products_list')
 
 
 class ProductUpdateView(UpdateView):
     model = Product
-    fields = 'name', 'price', 'description', 'discount'
+    fields = 'name', 'price', 'created_by', 'description', 'discount'
     template_name_suffix = '_update_form'
 
     def get_success_url(self):
@@ -118,14 +126,15 @@ class ProductDeleteView(DeleteView):
 #     return render(request, 'shopapp/order_list.html', context=context)
 
 
-class OrderListView(ListView):
+class OrderListView(LoginRequiredMixin, ListView):
     context_object_name = 'orders'
     queryset = (
         Order.objects.select_related('user').prefetch_related('products').filter(archived=False)
     )
 
 
-class OrderDetailView(DetailView):
+class OrderDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = 'shopapp.view_order'
     queryset = (
         Order.objects.select_related('user').prefetch_related('products')
     )
