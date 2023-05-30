@@ -30,10 +30,10 @@ class ProductAdmin(admin.ModelAdmin, ExportAsCSVMixin):
         OrderInline,
     ]
     # list_display = 'pk', 'name', 'description', 'price', 'discount'
-    list_display = 'pk', 'name', 'description_short', 'price', 'discount', 'archived'
+    list_display = 'pk', 'name', 'description_short', 'price', 'discount', 'archived', 'user_verbose'
     list_display_links = 'pk', 'name'
     ordering = 'pk', 'name',
-    search_fields = 'name', 'description',
+    search_fields = 'name', 'description', 'user_verbose'
     fieldsets = [
         (None, {
             'fields': ('name', 'description'),
@@ -53,6 +53,12 @@ class ProductAdmin(admin.ModelAdmin, ExportAsCSVMixin):
         if len(obj.description) < 48:
             return obj.description
         return obj.description[:48] + '...'
+
+    def get_queryset(self, request):
+        return Product.objects.select_related('created_by').prefetch_related('products')
+
+    def user_verbose(self, obj: Order) -> str:
+        return obj.user.first_name or obj.user.username
 
 
 class ProductInline(admin.StackedInline):
