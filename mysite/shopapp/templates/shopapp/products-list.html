@@ -13,6 +13,7 @@
                     <p><a href="{% url 'shopapp:products_details' pk=product.pk %}">Name: {{ product.name }}</a> </p>
                     <p>Price: {{ product.price }}</p>
                     <p>Discount: {% firstof product.discount 'no discount'  %}
+                    <p>Created by: {% firstof product.user.first_name product.user.username %}
                 </div>
             {% endfor %}
         </div>
