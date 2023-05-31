@@ -30,13 +30,13 @@ class ProductAdmin(admin.ModelAdmin, ExportAsCSVMixin):
         OrderInline,
     ]
     # list_display = 'pk', 'name', 'description', 'price', 'discount'
-    list_display = 'pk', 'name', 'description_short', 'price', 'discount', 'archived', 'user_verbose'
+    list_display = 'pk', 'name', 'description_short', 'price', 'discount', 'archived', 'created_by'
     list_display_links = 'pk', 'name'
     ordering = 'pk', 'name',
-    search_fields = 'name', 'description', 'user_verbose'
+    search_fields = 'name', 'description'
     fieldsets = [
         (None, {
-            'fields': ('name', 'description'),
+            'fields': ('name', 'description', 'created_by'),
         }),
         ('Price options', {
             'fields': ('price', 'discount'),
@@ -55,9 +55,9 @@ class ProductAdmin(admin.ModelAdmin, ExportAsCSVMixin):
         return obj.description[:48] + '...'
 
     def get_queryset(self, request):
-        return Product.objects.select_related('created_by').prefetch_related('products')
+        return Product.objects.prefetch_related('user')
 
-    def user_verbose(self, obj: Order) -> str:
+    def created_by(self, obj: Order) -> str:
         return obj.user.first_name or obj.user.username
 
 
