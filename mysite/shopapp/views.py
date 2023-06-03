@@ -48,7 +48,7 @@ class ProductDetailsView(DetailView):
     model = Product
     context_object_name = 'product'
     queryset = (
-        Order.objects.select_related('created_by').prefetch_related('products')
+        Product.objects.select_related('created_by')
     )
     # def get(self, request: HttpRequest, pk: int) -> HttpResponse:
     #     product = get_object_or_404(Product, pk=pk)
@@ -63,7 +63,7 @@ class ProductsListView(ListView):
     # model = Product
     context_object_name = 'products'
     queryset = (
-        Order.objects.select_related('created_by').prefetch_related('products').filter(archived=False)
+        Product.objects.select_related('created_by')
     )
 
     # def get_context_data(self, **kwargs):
@@ -72,9 +72,10 @@ class ProductsListView(ListView):
     #     return context
 
 
-class ProductCreateView(UserPassesTestMixin, CreateView):
-    def test_func(self):
-        return self.request.user.is_superuser
+class ProductCreateView(CreateView):
+    # def test_func(self):
+    #     return self.request.user.is_superuser
+    # permission_required = 'shopapp.add_product'
 
     model = Product
     fields = 'name', 'price', 'created_by', 'description', 'discount'
@@ -82,6 +83,7 @@ class ProductCreateView(UserPassesTestMixin, CreateView):
 
 
 class ProductUpdateView(UpdateView):
+    # permission_required = 'change_product'
     model = Product
     fields = 'name', 'price', 'created_by', 'description', 'discount'
     template_name_suffix = '_update_form'

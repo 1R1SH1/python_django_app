@@ -9,8 +9,15 @@
     <div>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            {% if perms.shopapp.add_product %}
+
+                {{ form.as_p }}
+
             <button type="submit">Create</button>
+            {% else %}
+                <p>You don't have permission to create new product</p>
+            {% endif %}
         </form>
     </div>
     <div>

@@ -55,7 +55,7 @@ class ProductAdmin(admin.ModelAdmin, ExportAsCSVMixin):
         return obj.description[:48] + '...'
 
     def get_queryset(self, request):
-        return Product.objects.prefetch_related('user')
+        return Product.objects.prefetch_related('created_by')
 
     def created_by(self, obj: Order) -> str:
         return obj.user.first_name or obj.user.username

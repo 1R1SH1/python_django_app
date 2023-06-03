@@ -11,7 +11,7 @@
             {% for product in products %}
                 <div>
                     <p><a href="{% url 'shopapp:products_details' pk=product.pk %}">Name: {{ product.name }}</a> </p>
-                    <p>Created by: {% firstof product.user.first_name product.user.username %}</p>
+                    <p>Created by: {% firstof product.created_by.first_name product.created_by.username %}</p>
                     <p>Price: {{ product.price }}</p>
                     <p>Discount: {% firstof product.discount 'no discount'%}</p>
                 </div>
