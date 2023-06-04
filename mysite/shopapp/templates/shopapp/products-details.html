@@ -13,12 +13,16 @@
         <div>Discount: <em>{{ product.discount }}</em></div>
         <div>Archived: <em>{{ product.archived }}</em></div>
     </div>
+    {% if perms.shopapp.change_product %}
     <div>
         <a href="{% url 'shopapp:product_update' pk=product.pk %}">Update product</a>
     </div>
+    {% endif %}
+    {% if perms.shopapp.delete_product %}
     <div>
         <a href="{% url 'shopapp:product_delete' pk=product.pk %}">Archive product</a>
     </div>
+    {% endif %}
     <div>
         <a href="{% url 'shopapp:products_list' %}">Back to products list</a>
     </div>

@@ -9,13 +9,8 @@
     <div>
         <form method="post">
             {% csrf_token %}
-            {% if perms.shopapp.add_product %}
+            {% if perms.shopapp.change_product %}
 
-                {{ form.as_p }}
-
-            <button type="submit">Update</button>
-            {% endif %}
-            {% if shopapp.product.created_by.pk %}
                 {{ form.as_p }}
 
             <button type="submit">Update</button>

@@ -72,7 +72,7 @@ class ProductsListView(ListView):
     #     return context
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     # def test_func(self):
     #     return self.request.user.is_superuser
     # permission_required = 'shopapp.add_product'
@@ -81,8 +81,19 @@ class ProductCreateView(CreateView):
     fields = 'name', 'price', 'created_by', 'description', 'discount'
     success_url = reverse_lazy('shopapp:products_list')
 
+    def form_valid(self, form):
+        response = super(ProductCreateView, self).form_valid(form)
+        if self.request.user.pk == self.object.created_by.pk:
+            self.object.save()
+            return response
 
-class ProductUpdateView(UpdateView):
+
+class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        elif self.request.user.pk == self.kwargs.get('pk'):
+            return True
     # permission_required = 'change_product'
     model = Product
     fields = 'name', 'price', 'created_by', 'description', 'discount'
@@ -95,7 +106,7 @@ class ProductUpdateView(UpdateView):
         )
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     success_url = reverse_lazy('shopapp:products_list')
 
