@@ -108,7 +108,9 @@ class ProductUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesT
     #     )
 
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
+class ProductDeleteView(PermissionRequiredMixin, LoginRequiredMixin, DeleteView):
+    permission_required = 'shopapp.delete_product'
+
     model = Product
     success_url = reverse_lazy('shopapp:products_list')
 
