@@ -72,13 +72,13 @@ class ProductsListView(ListView):
     #     return context
 
 
-class ProductCreateView(LoginRequiredMixin, CreateView):
+class ProductCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     # def test_func(self):
     #     return self.request.user.is_superuser
-    # permission_required = 'shopapp.add_product'
+    permission_required = 'shopapp.add_product'
 
     model = Product
-    fields = 'name', 'price', 'created_by', 'description', 'discount'
+    fields = 'name', 'price', 'description', 'discount'
     success_url = reverse_lazy('shopapp:products_list')
 
     def form_valid(self, form):
@@ -86,23 +86,26 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return super(ProductCreateView, self).form_valid(form)
 
 
-class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ProductUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    permission_required = 'shopapp.change_product'
+
     def test_func(self):
         if self.request.user.is_superuser:
             return True
-        if self.request.user.pk == self.get_object().created_by:
+        if self.request.user.pk == self.get_object().created_by.pk:
             return True
-        return False
-    # permission_required = 'change_product'
+        else:
+            return False
+
     model = Product
-    fields = 'name', 'price', 'created_by', 'description', 'discount'
+    fields = 'name', 'price', 'description', 'discount'
     template_name_suffix = '_update_form'
 
-    def get_success_url(self):
-        return reverse(
-            'shopapp:products_details',
-            kwargs={'pk': self.object.pk},
-        )
+    # def get_success_url(self):
+    #     return reverse(
+    #         'shopapp:products_details',
+    #         kwargs={'pk': self.object.pk},
+    #     )
 
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
